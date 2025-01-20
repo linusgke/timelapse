@@ -33,16 +33,18 @@ def start_timelapse():
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
     while datetime.now() < start_time:
+        print("Warte auf Aufnahmezeitpunkt ...")
         time.sleep(1)
 
-    print(f"Aufnahme startet")
+    print(f"Aufnahmezeitpunkt erreicht!")
     current_time = start_time
     i = 1
     while current_time < end_time:
-        print(f"#{i}: Aufnahme gemacht")
         date_str = current_time.strftime("%Y%m%d%H%M%S")
         subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", f"images/{date_str}.jpg"])
+        print(f"#{i}: Aufnahme gemacht! Warte {settings['interval']} Sekunden ...")
         time.sleep(settings['interval'])
+
         i = i + 1
         current_time += timedelta(seconds=settings['interval'])
 
@@ -51,7 +53,12 @@ def start_timelapse():
         "-pattern_type", "glob", "-i", "images/*.jpg",
         "-c:v", "libx264", "-r", "30", "-pix_fmt", "yuv420p", "video.mp4"
     ])
-    print(f"Ende. Video erstellt")
+
+    for file in os.scandir("images/"):
+        if file.name.endswith(".jpg"):
+            os.unlink(file.path)
+
+    print(f"Ende. Video erstellt und Bilder gelöscht!")
 
 @app.route('/')
 def index():
