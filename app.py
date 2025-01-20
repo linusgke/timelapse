@@ -41,7 +41,7 @@ def start_timelapse():
     while current_time < end_time:
         print(f"#{i}: Aufnahme gemacht")
         date_str = current_time.strftime("%Y%m%d%H%M%S")
-        subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", "-D", "1", f"/path/to/images/{date_str}.jpg"])
+        subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", "-D", "1", f"{date_str}.jpg"])
         time.sleep(settings['interval'])
         i = i + 1
         current_time += timedelta(seconds=settings['interval'])
