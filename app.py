@@ -2,6 +2,7 @@ import os
 import json
 import time
 import threading
+import subprocess
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect
 
@@ -39,6 +40,8 @@ def start_timelapse():
     i = 1
     while current_time < end_time:
         print(f"#{i}: Aufnahme gemacht")
+        date_str = current_time.strftime("%Y%m%d%H%M%S")
+        subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", "-D", "1", f"/path/to/images/{date_str}.jpg"])
         time.sleep(settings['interval'])
         i = i + 1
         current_time += timedelta(seconds=settings['interval'])
