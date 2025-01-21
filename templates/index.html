@@ -23,6 +23,9 @@
         <label for="video_duration">Fertige Filmdauer (in Sekunden):</label>
 <input type="number" id="video_duration" name="video_duration" value="{{ settings['video_duration'] }}" min="1" required><br>
  
+{{ end_time }}
+{{ running }}
+
         <button type="submit">Speichern</button>
 </form>
 <form method="POST" action="/reset_settings">

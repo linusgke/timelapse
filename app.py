@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, redirect
 SETTINGS_FILE = "config.json"
 
 app = Flask(__name__)
+running = False
 
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -16,11 +17,11 @@ def load_settings():
             return json.load(file)
         
     return {
-    "interval": 10,
-    "capture_duration": 60,
-    "start_time": "12:30",
-    "video_duration": 60
-}
+        "interval": 10,
+        "capture_duration": 60,
+        "start_time": "12:30",
+        "video_duration": 60
+    }
 
 def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as file:
@@ -35,6 +36,8 @@ def start_timelapse():
     while datetime.now() < start_time:
         print("Warte auf Aufnahmezeitpunkt ...")
         time.sleep(1)
+
+    running = True
 
     print(f"Aufnahmezeitpunkt erreicht!")
     current_time = start_time
@@ -54,6 +57,8 @@ def start_timelapse():
         "-c:v", "libx264", "-r", "30", "-pix_fmt", "yuv420p", "video.mp4"
     ])
 
+    running = False
+
     for file in os.scandir("images/"):
         if file.name.endswith(".jpg"):
             os.unlink(file.path)
@@ -63,7 +68,10 @@ def start_timelapse():
 @app.route('/')
 def index():
     settings = load_settings()
-    return render_template('index.html', settings=settings)
+    start_time = datetime.strptime(settings['start_time'], "%H:%M")
+    end_time = start_time + timedelta(seconds=settings['capture_duration'])
+
+    return render_template('index.html', settings=settings, end_time=end_time, running=running)
 
 @app.route('/start_timelapse', methods=['POST'])
 def start():
