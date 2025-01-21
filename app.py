@@ -37,6 +37,7 @@ def save_settings(settings):
         json.dump(settings, file)
 
 def start_timelapse():
+    global state
     settings = load_settings()
 
     start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
