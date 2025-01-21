@@ -74,7 +74,7 @@ def start_timelapse():
 @app.route('/')
 def index():
     settings = load_settings()
-    start_time = datetime.strptime(settings['start_time'], "%H:%M")
+    start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
     return render_template('index.html', settings=settings, end_time=end_time, running=running)
