@@ -5,8 +5,16 @@ import threading
 import subprocess
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect
+from enum import Enum
 
-from .const import SETTINGS_FILE, TimelapseState
+#from .const import SETTINGS_FILE, TimelapseState
+
+SETTINGS_FILE = "config.json"
+
+class TimelapseState(Enum):
+    OFF = 1
+    WAITING = 2
+    RECORDING = 3
 
 app = Flask(__name__)
 state = TimelapseState.OFF
