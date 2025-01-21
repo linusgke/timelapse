@@ -6,10 +6,10 @@ import subprocess
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect
 
-SETTINGS_FILE = "config.json"
+from .const import SETTINGS_FILE, TimelapseState
 
 app = Flask(__name__)
-running = False
+state = TimelapseState.OFF
 
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -34,41 +34,45 @@ def start_timelapse():
     start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
-    now = datetime.now()
+    state = TimelapseState.WAITING
 
-    print(now.strftime("%d%m/%Y, %H:%M:%S") + " < " + start_time.strftime("%d/%m/%Y, %H:%M:%S"))
-
-    while now < start_time:
-        print(now.strftime("%Y-%m-%d %H:%M") + " < " + start_time.strftime("%Y-%m-%d %H:%M"))
+    # Warte bis Aufnahme starten soll
+    while not now or now < start_time:
         print("Warte auf Aufnahmezeitpunkt ...")
         now = datetime.now()
         time.sleep(1)
 
-    running = True
+    state = TimelapseState.RECORDING
 
+    # Aufnahme durchführen
     print(f"Aufnahmezeitpunkt erreicht!")
     current_time = start_time
     i = 1
     while current_time < end_time:
-        date_str = current_time.strftime("%Y%m%d%H%M%S")
-        subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", f"images/{date_str}.jpg"])
-        print(f"#{i}: Aufnahme gemacht! Warte {settings['interval']} Sekunden ...")
-        time.sleep(settings['interval'])
+        interval = settings['interval']
+        date = current_time.strftime("%Y-%m-%d-%H-%M-%S")
+
+        subprocess.run(["fswebcam", "-r", "1280x720", "--jpeg", "85", f"images/{date}.jpg"])
+        print(f"#{i}: Aufnahme gemacht! Warte {interval} Sekunden ...")
+        time.sleep(interval)
 
         i = i + 1
-        current_time += timedelta(seconds=settings['interval'])
+        current_time += timedelta(seconds=interval)
 
+    # Video erstellen
+    date = current_time.strftime("%Y-%m-%d-%H-%M-%S")
     subprocess.run([
         "ffmpeg", "-framerate", str(int(settings['capture_duration'] / settings['video_duration'])),
         "-pattern_type", "glob", "-i", "images/*.jpg",
-        "-c:v", "libx264", "-r", "30", "-pix_fmt", "yuv420p", "video.mp4"
+        "-c:v", "libx264", "-r", "30", "-pix_fmt", "yuv420p", f"videos/{date}.mp4"
     ])
 
-    running = False
-
+    # Alle Fotos löschen
     for file in os.scandir("images/"):
         if file.name.endswith(".jpg"):
             os.unlink(file.path)
+
+    state = TimelapseState.OFF
 
     print(f"Ende. Video erstellt und Bilder gelöscht!")
 
@@ -78,7 +82,7 @@ def index():
     start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
-    return render_template('index.html', settings=settings, end_time=end_time, running=running)
+    return render_template('index.html', settings=settings, end_time=end_time, state=state)
 
 @app.route('/start_timelapse', methods=['POST'])
 def start():
