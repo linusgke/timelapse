@@ -36,9 +36,10 @@ def start_timelapse():
 
     now = datetime.now()
 
-    print(now.strftime("%d/%m/%Y, %H:%M:%S") + " < " + start_time.strftime("%d/%m/%Y, %H:%M:%S"))
+    print(now.strftime("%d%m/%Y, %H:%M:%S") + " < " + start_time.strftime("%d/%m/%Y, %H:%M:%S"))
 
     while now < start_time:
+        print(now.strftime("%Y-%m-%d %H:%M") + " < " + start_time.strftime("%Y-%m-%d %H:%M"))
         print("Warte auf Aufnahmezeitpunkt ...")
         time.sleep(1)
 
