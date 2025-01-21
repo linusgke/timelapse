@@ -19,7 +19,7 @@ def load_settings():
     return {
         "interval": 10,
         "capture_duration": 60,
-        "start_date": datetime.now().strftime("%d.%m.%Y"),
+        "start_date": datetime.now().strftime("%Y-%m-%d"),
         "start_time": "12:30",
         "video_duration": 60
     }
@@ -31,10 +31,11 @@ def save_settings(settings):
 def start_timelapse():
     settings = load_settings()
 
-    start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%d.%m.%Y %H:%M")
+    start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
     now = datetime.now()
+
     print(now.strftime("%d/%m/%Y, %H:%M:%S") + " < " + start_time.strftime("%d/%m/%Y, %H:%M:%S"))
 
     while now < start_time:
