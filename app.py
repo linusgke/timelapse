@@ -33,7 +33,10 @@ def start_timelapse():
     start_time = datetime.strptime(settings['start_time'], "%H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
-    while datetime.now() < start_time:
+    now = datetime.now()
+    print(now + " < " + start_time)
+
+    while now < start_time:
         print("Warte auf Aufnahmezeitpunkt ...")
         time.sleep(1)
 
