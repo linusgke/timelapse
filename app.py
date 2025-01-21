@@ -45,7 +45,8 @@ def start_timelapse():
     state = TimelapseState.WAITING
 
     # Warte bis Aufnahme starten soll
-    while not now or now < start_time:
+    now = datetime.now()
+    while now < start_time:
         print("Warte auf Aufnahmezeitpunkt ...")
         now = datetime.now()
         time.sleep(1)
