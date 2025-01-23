@@ -63,7 +63,7 @@ def start_timelapse():
     i = 1
     while current_time < end_time:
         if state == TimelapseState.OFF:
-            return
+            break
         
         interval = settings['interval']
         date = current_time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -98,7 +98,13 @@ def index():
     start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
-    return render_template('index.html', settings=settings, end_time=end_time, state=state, running=state!=TimelapseState.OFF)
+    videos = []
+
+    for file in os.scandir("videos/"):
+        if file.name.endswith(".mp4"):
+            videos.append(file.name)
+
+    return render_template('index.html', settings=settings, end_time=end_time, state=state, running=state!=TimelapseState.OFF, videos=videos)
 
 @app.route('/start_timelapse', methods=['POST'])
 def start():

@@ -15,7 +15,9 @@
         <div class="box">
                 <h2>Aktueller Zustand</h2>
                 <h4>{{ state.value }}</h4>
+                {% if running == True %}
                 <h4>Aufnahme endet: {{ end_time }}</h4>
+                {% endif %}
         </div>
 
         <div class="box">
@@ -66,7 +68,20 @@
 
         <div class="box">
                 <h2>Aufgenommene Videos</h2>
+                <table>
+                        <tr>
+                                <th>Dateiname</th>
+                        </tr>
+                        {% for name in videos %}
+                        <tr>
+                                <td>{{ name }}</td>
+                        </tr>
+                        {% endfor %}
+                </table>
         </div>
+
+        <small>&copy; 2025 &ndash; Linus Groschke und Nick Fischer<br>Ein Projekt im Rahmen des Unterrichts an der
+                Berufsschule VII in Augsburg.</small>
 </body>
 
 </html>
