@@ -76,7 +76,7 @@ def start_timelapse():
         current_time += timedelta(seconds=interval)
 
     # Video erstellen
-    date = current_time.strftime("%Y-%m-%d-%H-%M-%S")
+    date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     subprocess.run([
         "ffmpeg", "-framerate", str(int(settings['capture_duration'] / settings['video_duration'])),
         "-pattern_type", "glob", "-i", "images/*.jpg",
