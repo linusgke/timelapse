@@ -127,7 +127,7 @@ def download():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    os.unlink(request.args.get('file'))
+    os.unlink('videos/' + request.args.get('file'))
     return redirect('/')
 
 @app.route('/set_settings', methods=['POST'])
