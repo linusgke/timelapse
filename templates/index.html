@@ -70,7 +70,12 @@
                 <h2>Aufgenommene Videos</h2>
                 <ul>
                         {% for name in videos %}
-                        <li><a href="download?file={{ name }}">{{ name }}</a></li>
+                        <li>
+                                <a href="download?file={{ name }}">{{ name }}</a>
+                                <form method="POST" action="/delete?file={{ name }}">
+                                        <button type="submit">Löschen</button>
+                                </form>
+                        </li>
                         {% endfor %}   
                 </ul>
         </div>

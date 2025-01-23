@@ -3,6 +3,10 @@ body {
     background-color: bisque;
 }
 
+li {
+    list-style-type: none
+}
+
 .box {
     border-radius: 10px;
     border-style: dotted;

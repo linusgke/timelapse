@@ -125,6 +125,11 @@ def stop():
 def download():
     return send_file('videos/' + request.args.get('file'), as_attachment=True)
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    os.unlink(request.args.get('file'))
+    return redirect('/')
+
 @app.route('/set_settings', methods=['POST'])
 def set_settings():
     settings = load_settings()
