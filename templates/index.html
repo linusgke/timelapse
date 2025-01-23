@@ -68,16 +68,11 @@
 
         <div class="box">
                 <h2>Aufgenommene Videos</h2>
-                <table>
-                        <tr>
-                                <th>Dateiname</th>
-                        </tr>
+                <ul>
                         {% for name in videos %}
-                        <tr>
-                                <td>{{ name }}</td>
-                        </tr>
-                        {% endfor %}
-                </table>
+                        <li><a href="download?file={{ name }}">{{ name }}</a></li>
+                        {% endfor %}   
+                </ul>
         </div>
 
         <small>&copy; 2025 &ndash; Linus Groschke und Nick Fischer<br>Ein Projekt im Rahmen des Unterrichts an der

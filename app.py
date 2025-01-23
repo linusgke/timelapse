@@ -4,7 +4,7 @@ import time
 import threading
 import subprocess
 from datetime import datetime, timedelta
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_file
 from enum import Enum
 
 #from .const import SETTINGS_FILE, TimelapseState
@@ -120,6 +120,10 @@ def stop():
     global state
     state = TimelapseState.OFF
     return redirect('/')
+
+@app.route('/download', methods=['GET'])
+def download():
+    return send_file('videos/' + request.args.get('file'), as_attachment=True)
 
 @app.route('/set_settings', methods=['POST'])
 def set_settings():
