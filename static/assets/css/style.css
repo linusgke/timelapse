@@ -1,0 +1,13 @@
+body {
+    text-align: center;
+    background-color: bisque;
+}
+
+.box {
+    border-radius: 10px;
+    border-style: dotted;
+    margin-top: 20px;
+    margin-left: 170px;
+    margin-right: 170px;
+    padding-bottom: 20px;
+}

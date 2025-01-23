@@ -12,9 +12,9 @@ from enum import Enum
 SETTINGS_FILE = "config.json"
 
 class TimelapseState(Enum):
-    OFF = 1
-    WAITING = 2
-    RECORDING = 3
+    OFF = "Aus"
+    WAITING = "Warte auf Aufnahmezeitpunkt"
+    RECORDING = "Aufnahme läuft"
 
 app = Flask(__name__)
 state = TimelapseState.OFF
@@ -48,6 +48,9 @@ def start_timelapse():
     # Warte bis Aufnahme starten soll
     now = datetime.now()
     while now < start_time:
+        if state == TimelapseState.OFF:
+            return
+        
         print("Warte auf Aufnahmezeitpunkt ...")
         now = datetime.now()
         time.sleep(1)
@@ -59,6 +62,9 @@ def start_timelapse():
     current_time = start_time
     i = 1
     while current_time < end_time:
+        if state == TimelapseState.OFF:
+            return
+        
         interval = settings['interval']
         date = current_time.strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -92,11 +98,21 @@ def index():
     start_time = datetime.strptime(settings['start_date'] + " " + settings['start_time'], "%Y-%m-%d %H:%M")
     end_time = start_time + timedelta(seconds=settings['capture_duration'])
 
-    return render_template('index.html', settings=settings, end_time=end_time, state=state)
+    return render_template('index.html', settings=settings, end_time=end_time, state=state, running=state!=TimelapseState.OFF)
 
 @app.route('/start_timelapse', methods=['POST'])
 def start():
+    global state
+    if not state == TimelapseState.OFF:
+        return redirect('/')
+
     threading.Thread(target=start_timelapse, daemon=True).start()
+    return redirect('/')
+
+@app.route('/stop_timelapse', methods=['POST'])
+def stop():
+    global state
+    state = TimelapseState.OFF
     return redirect('/')
 
 @app.route('/set_settings', methods=['POST'])
